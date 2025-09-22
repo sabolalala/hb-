@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday Djihane 💕</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --pink-1: #fff0f6;
+      --pink-2: #ffe6f0;
+      --accent: #ff6fa8;
+      --accent-2: #ff9ecf;
+      --muted: #7a4863;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Poppins, Arial, sans-serif;background:linear-gradient(180deg,var(--pink-1),var(--pink-2));color:#3b1740;overflow-x:hidden;}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:28px;position:relative;z-index:1}
+    .card{width:960px; max-width:96%; background:rgba(255,255,255,0.9);
+      border-radius:24px; padding:28px; text-align:center; position:relative; overflow:hidden;
+      box-shadow:0 20px 60px rgba(176,47,98,0.12); border:1px solid rgba(255,255,255,0.6);
+      animation:fadeIn 1.2s ease forwards;
+    }
+    @keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+    h1.title{font-family:'Dancing Script', cursive; font-size:48px; margin:6px 0;color:#c81f70;animation:float 3s ease-in-out infinite;}
+    .lead{font-size:16px;color:var(--muted); margin-bottom:10px}
+    .btn{cursor:pointer;border:0;padding:12px 18px;border-radius:14px;
+      background:linear-gradient(90deg,var(--accent-2),var(--accent));
+      color:white;font-weight:700;box-shadow:0 10px 28px rgba(255,140,177,0.22);
+      transition:transform .2s ease,box-shadow .2s ease; font-size:16px; position:relative; overflow:hidden;}
+    .btn:hover{transform:scale(1.05);box-shadow:0 0 18px rgba(255,111,168,0.6)}
+    .btn:active{transform:scale(0.95)}
+    .small{padding:8px 12px;border-radius:10px;font-size:14px}
+    .hidden{display:none}
+    .message-grid{margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+    .message{opacity:0;transform:scale(0.9) translateY(20px);
+      background:rgba(255,255,255,0.92);padding:14px 20px;border-radius:16px;
+      border:1px solid rgba(255,150,190,0.2);box-shadow:0 6px 20px rgba(0,0,0,0.08);
+      font-weight:600;color:#6b1843;font-size:16px;transition:all 0.6s ease;}
+    .message.show{opacity:1;transform:scale(1) translateY(0)}
+    .decor{font-size:22px;margin-bottom:8px;animation:float 4s ease-in-out infinite}
+    @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+    #bigTitle{font-family:'Dancing Script', cursive; font-size:46px;color:#c81f70;margin:12px 0;animation:fadeIn 1.5s ease forwards;}
+    #confettiCanvas,#heartsCanvas{position:fixed;left:0;top:0;pointer-events:none;z-index:0}
+    @media (max-width:600px){h1.title{font-size:28px} .card{padding:18px} #bigTitle{font-size:30px}}
+  </style>
+</head>
+<body>
+  <canvas id="heartsCanvas"></canvas>
+  <div class="wrap">
+    <div class="card" id="card">
+      <h1 class="title">For my Djihane</h1>
+      <div class="lead">Click the buttons one by one 💖</div>
+
+      <div id="step1">
+        <button id="btnLove" class="btn">I Love You ❤️</button>
+      </div>
+
+      <div id="step2" class="hidden">
+        <button id="btnSurprise" class="btn">There’s a surprise for you 🎁</button>
+      </div>
+
+      <div id="step3" class="hidden">
+        <button id="btnDay" class="btn">You know what day it is?</button>
+        <div id="wait" class="lead hidden">Okay... wait 3 seconds... ⏳</div>
+      </div>
+
+      <div id="revealArea" class="hidden">
+        <button id="btnReveal" class="btn">Reveal!</button>
+      </div>
+
+      <div id="celebrate" class="hidden">
+        <div class="decor">🎂 🎈 ✨</div>
+        <div id="bigTitle">HAPPY BIRTHDAY DJIHANE 💕</div>
+
+        <div style="margin-top:12px">
+          <button id="confettiButton" class="btn">Shoot Confetti 🎊</button>
+          <button id="toggleMessages" class="btn small">Love Messages 💌</button>
+        </div>
+
+        <div id="messages" class="hidden">
+          <div class="message-grid" id="messageGrid"></div>
+          <button id="nextMessage" class="btn small hidden">Next 💌</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Sounds -->
+  <audio id="bgMusic" loop preload="auto" src="https://cdn.pixabay.com/download/audio/2023/05/14/audio_birthday.mp3?filename=romantic-birthday-12345.mp3"></audio>
+  <audio id="confSound" preload="auto" src="https://cdn.pixabay.com/download/audio/2023/07/10/audio_confetti.mp3?filename=confetti-67890.mp3"></audio>
+  <audio id="tapSound" preload="auto" src="https://cdn.pixabay.com/download/audio/2023/04/02/audio_click.mp3?filename=soft-click-54321.mp3"></audio>
+  <audio id="chimeSound" preload="auto" src="https://cdn.pixabay.com/download/audio/2022/08/15/audio_chime.mp3?filename=romantic-chime-13579.mp3"></audio>
+
+<script>
+// Floating hearts background
+const heartsCanvas=document.getElementById('heartsCanvas');
+const hctx=heartsCanvas.getContext('2d');
+let Ww=heartsCanvas.width=window.innerWidth, Hh=heartsCanvas.height=window.innerHeight;
+window.addEventListener('resize',()=>{Ww=heartsCanvas.width=window.innerWidth;Hh=heartsCanvas.height=window.innerHeight});
+const hearts=[];function heart(x,y,size,speed){return{x,y,size,speed,alpha:1}};
+for(let i=0;i<25;i++){hearts.push(heart(Math.random()*Ww,Math.random()*Hh,14+Math.random()*16,0.5+Math.random()*1.5));}
+function drawHearts(){hctx.clearRect(0,0,Ww,Hh);for(let h of hearts){h.y-=h.speed;if(h.y<-20){h.y=Hh+20;h.x=Math.random()*Ww;}hctx.fillStyle=`rgba(255,105,180,0.3)`;hctx.font=`${h.size}px Arial`;hctx.fillText('❤',h.x,h.y);}requestAnimationFrame(drawHearts);}drawHearts();
+
+// Confetti system
+const canvas=document.getElementById('confettiCanvas');const ctx=canvas.getContext('2d');
+let W=canvas.width=window.innerWidth;let H=canvas.height=window.innerHeight;
+window.addEventListener('resize',()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight});
+function rand(min,max){return Math.random()*(max-min)+min}
+function makePieces(n,x=W/2,y=H/3){const cols=['#ff77c9','#ffd6ea','#ffb3d6','#ffd1f2','#ff9ecf','#fff3f8','#ffd1e6','#ffd87a','#b3e6ff','#c6ffde'];const arr=[];for(let i=0;i<n;i++){arr.push({x:x+rand(-80,80),y:y+rand(-40,40),vx:rand(-6,6),vy:rand(-10,-3),size:rand(6,14),ang:rand(0,Math.PI*2),spin:rand(-0.2,0.4),color:cols[Math.floor(rand(0,cols.length))],shape:Math.random()>0.5?'rect':'oval'});}return arr;}
+let pieces=[];function draw(){ctx.clearRect(0,0,W,H);for(let p of pieces){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.ang);ctx.fillStyle=p.color;if(p.shape==='rect'){ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*1.3);}else{ctx.beginPath();ctx.ellipse(0,0,p.size*0.6,p.size,0,0,Math.PI*2);ctx.fill();}ctx.restore();p.x+=p.vx;p.y+=p.vy;p.vy+=0.18;p.ang+=p.spin;}if(pieces.length>2000)pieces.splice(0,pieces.length-800);requestAnimationFrame(draw);}draw();
+function shoot(n=180,x=W/2,y=H/3){pieces=pieces.concat(makePieces(n,x,y));document.getElementById('confSound').play().catch(()=>{});}
+
+// Elements
+const btnLove=document.getElementById('btnLove');
+const btnSurprise=document.getElementById('btnSurprise');
+const btnDay=document.getElementById('btnDay');
+const btnReveal=document.getElementById('btnReveal');
+const step1=document.getElementById('step1');const step2=document.getElementById('step2');
+const step3=document.getElementById('step3');const revealArea=document.getElementById('revealArea');
+const celebrate=document.getElementById('celebrate');const wait=document.getElementById('wait');
+const confBtn=document.getElementById('confettiButton');
+const toggleMessages=document.getElementById('toggleMessages');
+const messages=document.getElementById('messages');const grid=document.getElementById('messageGrid');
+const nextMessage=document.getElementById('nextMessage');
+const bgMusic=document.getElementById('bgMusic');const tapSound=document.getElementById('tapSound');const chimeSound=document.getElementById('chimeSound');
+
+const loveMsgs=["You're my forever.","Every moment with you is a gift.","You make my world brighter.","Happy birthday to the love of my life.","With you, every day feels like spring.","I adore everything about you.","Thank you for being you.","You are my favorite 'hello' and hardest 'goodbye'.","To many more birthdays together.","Your smile is my favorite sight.","I love you more every day."];
+let msgIndex=0;
+
+function playTap(){tapSound.currentTime=0;tapSound.play().catch(()=>{});} 
+function playChime(){chimeSound.currentTime=0;chimeSound.play().catch(()=>{});} 
+
+btnLove.addEventListener('click',()=>{playTap();step1.classList.add('hidden');step2.classList.remove('hidden');shoot(80)});
+btnSurprise.addEventListener('click',()=>{playTap();step2.classList.add('hidden');step3.classList.remove('hidden');shoot(80)});
+btnDay.addEventListener('click',()=>{playTap();btnDay.disabled=true;wait.classList.remove('hidden');setTimeout(()=>{wait.classList.add('hidden');step3.classList.add('hidden');revealArea.classList.remove('hidden');},3000)});
+btnReveal.addEventListener('click',async()=>{playChime();revealArea.classList.add('hidden');celebrate.classList.remove('hidden');shoot(400);try{bgMusic.volume=0.5;await bgMusic.play();}catch(e){};});
+
+confBtn.addEventListener('click',()=>{playTap();const r=confBtn.getBoundingClientRect();shoot(220,r.left+r.width/2,r.top+r.height/2);});
+
+toggleMessages.addEventListener('click',()=>{
+  playTap();
+  if(messages.classList.contains('hidden')){
+    messages.classList.remove('hidden');
+    grid.innerHTML='';msgIndex=0;nextMessage.classList.remove('hidden');
+  }else{messages.classList.add('hidden');}
+});
+
+nextMessage.addEventListener('click',()=>{
+  if(msgIndex<loveMsgs.length){
+    const div=document.createElement('div');
+    div.className='message';
+    div.innerHTML=`💌 ${loveMsgs[msgIndex]}`;
+    grid.appendChild(div);
+    setTimeout(()=>{div.classList.add('show');playChime();},80);
+    msgIndex++;
+    if(msgIndex>=loveMsgs.length){
+      nextMessage.classList.add('hidden');
+      // final surprise after last message
+      setTimeout(()=>{shoot(600,W/2,H/3);},600);
+    }
+  }
+});
+</script>
+</body>
+</html>
